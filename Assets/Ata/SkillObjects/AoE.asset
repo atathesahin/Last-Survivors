@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: AoE
   m_EditorClassIdentifier: 
   skillName: AoE
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: a378c1d2c065eec4596c5c2b1a7b93f0, type: 3}
   maxLevel: 4
   currentLevel: 1
-  baseRadius: 3
+  baseRadius: 2
   damage: 10
   damageInterval: 1
+  aoeIndicatorPrefab: {fileID: 2334400830504128493, guid: 03f94ca09ee5beb468b748f16d66f0a3,
+    type: 3}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HpRegen
   m_EditorClassIdentifier: 
   skillName: HpRegen
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f11a7a64920f50243b69395445b215d9, type: 3}
   maxLevel: 4
   currentLevel: 1
   regenAmount: 1

@@ -10,7 +10,10 @@ public class Player : MonoBehaviour
     public int hpRegenRate = 1;
     public int speed = 5;
     public int gold = 0;
+    public GameObject currentWeapon; // Oyuncunun kullandığı mevcut silah
+    public Transform weaponHolder; // Silahın elde tutulacağı pozisyon
 
+    private float lastAttackTime;
     private List<Skill> acquiredSkills = new List<Skill>(); // Kazanılmış yeteneklerin listesi
 
     void Awake()
@@ -29,50 +32,36 @@ public class Player : MonoBehaviour
     void Start()
     {
         GainRandomSkill();  // Oyunun başında rastgele bir yetenek kazandır
+        EquipWeapon(currentWeapon); // Başlangıç silahını kuşan
     }
-    /*
-    private void OnTriggerStay(Collider other)
+
+    void Update()
     {
-        if (other.CompareTag("Enemy"))
-        {
-            Enemy enemyComponent = other.GetComponent<Enemy>();
-            if (enemyComponent != null && acquiredSkills.Exists(skill => skill is AoESkill))
-            {
-                AoESkill aoeSkill = (AoESkill)acquiredSkills.Find(skill => skill is AoESkill);
-                if (aoeSkill != null)
-                {
-                    enemyComponent.TakeDamage((int)aoeSkill.damage);
-                    Debug.Log($"{other.name} has taken {aoeSkill.damage} damage from AOE skill.");
-                }
-            }
-        }
+        AttackClosestEnemy();
     }
-    */
 
     public void TakeDamage(int damageAmount)
     {
         health -= damageAmount;
         if (health < 0) health = 0;
         UIManager.Instance.UpdateHealthUI(health, maxHealth);
+
         if (health <= 0)
         {
-            
             Die();
         }
+    }
+
+    public void GainGold(int amount)
+    {
+        gold += amount;
+        UIManager.Instance.UpdateGoldUI(gold); // Altın bilgisini güncelle
     }
 
     private void Die()
     {
         Debug.Log("Player öldü!");
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("SkillPoint") && WaveManager.Instance != null && WaveManager.Instance.IsInPreparationPhase())
-        {
-            Debug.Log("SkillPoint tetiklendi, hazırlık aşamasındayız.");
-            GainRandomSkill();  // Hazırlık süresinde rastgele bir yetenek kazandırır veya yükseltir
-        }
+        // Oyuncu öldüğünde yapılacak işlemler
     }
 
     public void GainRandomSkill()
@@ -92,6 +81,8 @@ public class Player : MonoBehaviour
                 acquiredSkills.Add(randomSkill);
                 randomSkill.ActivateSkill(this); // Yetenek etkinleştiriliyor
                 Debug.Log("Yeni yetenek kazandınız: " + randomSkill.skillName);
+                
+                UIManager.Instance.AddSkillIcon(randomSkill.icon);
             }
         }
         else
@@ -100,15 +91,71 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void GainGold(int amount)
+    public void EquipWeapon(GameObject weapon)
     {
-        gold += amount;
-        UIManager.Instance.UpdateGoldUI(gold);
+        if (weapon == null)
+        {
+            return;
+        }
+
+        if (currentWeapon != null && currentWeapon != weapon)
+        {
+            Destroy(currentWeapon); // Mevcut silahı kaldır
+        }
+        currentWeapon = Instantiate(weapon, weaponHolder);
+        currentWeapon.transform.localPosition = new Vector3(0, 0.5f, 0); // Silahın konumunu ayarlayın
+        currentWeapon.transform.localRotation = Quaternion.Euler(-90, 0, 0); // Silahın rotasyonunu ayarlayın
+        Debug.Log("Yeni silah kuşanıldı: " + currentWeapon.name);
     }
 
-    public void GainSkill(Skill newSkill)
+    private void AttackClosestEnemy()
     {
-        acquiredSkills.Add(newSkill);
+        float closestDistance = Mathf.Infinity;
+        Enemy closestEnemy = null;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f); // 15 birimlik bir menzil içindeki düşmanları kontrol et
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Enemy"))
+            {
+                float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = hitCollider.GetComponent<Enemy>();
+                }
+            }
+        }
+
+        if (closestEnemy != null)
+        {
+            // Mermi fırlat
+            if (currentWeapon != null)
+            {
+                ProjectileShooter shooter = currentWeapon.GetComponent<ProjectileShooter>();
+                if (shooter != null && Time.time >= lastAttackTime + shooter.attackCooldown)
+                {
+                    shooter.ShootProjectile(closestEnemy.transform);
+                    lastAttackTime = Time.time;
+                }
+            }
+        }
+    }
+
+    public bool TryPurchaseWeapon(GameObject weapon, int cost)
+    {
+        if (gold >= cost)
+        {
+            gold -= cost;
+            EquipWeapon(weapon);
+            UIManager.Instance.UpdateGoldUI(gold); // Altın bilgisini güncelle
+            return true;
+        }
+        else
+        {
+            Debug.Log("Yeterli altın yok!");
+            return false;
+        }
     }
 
     void OnDrawGizmos()

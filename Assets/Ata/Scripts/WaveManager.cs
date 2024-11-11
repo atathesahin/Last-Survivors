@@ -4,17 +4,21 @@ using System.Collections.Generic;
 
 public class WaveManager : MonoBehaviour
 {
-     public static WaveManager Instance;
+   public static WaveManager Instance;
 
-    public int currentWave = 0;
+    public int currentWave = 1;
     public int enemiesPerWave = 5;
     public float preparationTime = 30f;
     public GameObject enemyPrefab;
     public GameObject bossPrefab;
     public Transform spawnPoint;
+    public GameObject[] weapons; // Silah çeşitliliği
+    public Transform[] weaponSpawnPoints; // Silahların rastgele çıkacağı noktalar
 
     private List<GameObject> activeEnemies = new List<GameObject>();
     private bool isPreparationPhase = false;
+    private GameObject spawnedWeapon; // Hazırlık aşamasında çıkan silah
+    private int spawnedWeaponCost; // Spawnlanan silahın maliyeti
 
     void Awake()
     {
@@ -31,6 +35,7 @@ public class WaveManager : MonoBehaviour
     void Start()
     {
         StartCoroutine(StartWave());
+        UIManager.Instance.UpdateWaveUI(currentWave); // İlk wave bilgisini günceller
     }
 
     IEnumerator StartWave()
@@ -71,7 +76,7 @@ public class WaveManager : MonoBehaviour
         }
 
         currentWave++;
-        UIManager.Instance.UpdateWaveUI(currentWave);
+        UIManager.Instance.UpdateWaveUI(currentWave); // Wave numarasını günceller
     }
 
     IEnumerator PreparationPhase()
@@ -79,11 +84,21 @@ public class WaveManager : MonoBehaviour
         isPreparationPhase = true;
         float countdown = preparationTime;
 
+        // Bir silah spawn et
+        SpawnWeaponForPreparation();
+
         while (countdown > 0)
         {
             countdown -= Time.deltaTime;
             UIManager.Instance.UpdateCountdownUI(countdown);  // Geri sayımı günceller
             yield return null;
+        }
+
+        // Hazırlık süresi bitince silahı yok et
+        if (spawnedWeapon != null)
+        {
+            Destroy(spawnedWeapon);
+            UIManager.Instance.UpdateWeaponCostUI(0); // Silah yok edildikten sonra maliyet textini temizle
         }
 
         isPreparationPhase = false;
@@ -102,5 +117,34 @@ public class WaveManager : MonoBehaviour
         {
             activeEnemies.Remove(enemy);
         }
+    }
+
+    // Hazırlık aşamasında rastgele bir silah spawn eder
+    private void SpawnWeaponForPreparation()
+    {
+        if (weaponSpawnPoints.Length > 0 && weapons.Length > 0)
+        {
+            int randomSpawnIndex = Random.Range(0, weaponSpawnPoints.Length);
+            int randomWeaponIndex = Random.Range(0, weapons.Length);
+
+            spawnedWeapon = Instantiate(weapons[randomWeaponIndex], weaponSpawnPoints[randomSpawnIndex].position, Quaternion.identity);
+            spawnedWeaponCost = Random.Range(100, 1001); // Silah maliyetini 100-1000 altın arasında rastgele belirle
+            Debug.Log("Spawnlanan silah maliyeti: " + spawnedWeaponCost);
+
+            // Silah maliyetini UI'da göster
+            UIManager.Instance.UpdateWeaponCostUI(spawnedWeaponCost);
+        }
+    }
+
+    public void WeaponPickedUp(GameObject weapon)
+    {
+        List<GameObject> updatedWeapons = new List<GameObject>(weapons);
+        updatedWeapons.Remove(weapon);
+        weapons = updatedWeapons.ToArray();
+    }
+
+    public int GetSpawnedWeaponCost()
+    {
+        return spawnedWeaponCost;
     }
 }

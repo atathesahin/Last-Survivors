@@ -6,12 +6,15 @@ using DG.Tweening; // DOTween kütüphanesi
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance;
+     public static UIManager Instance;
 
-    public TextMeshProUGUI goldText;              // Altın miktarını gösterecek Text bileşeni
-    public TextMeshProUGUI waveText;              // Dalga sayısını gösterecek Text bileşeni
-    public TextMeshProUGUI countdownText;         // Geri sayımı gösterecek Text bileşeni
-    public TextMeshProUGUI healthText;            // Sağlık durumunu gösterecek Text bileşeni
+    public TextMeshProUGUI healthText; // Oyuncunun sağlık bilgisini gösteren UI
+    public TextMeshProUGUI goldText; // Oyuncunun altın miktarını gösteren UI
+    public TextMeshProUGUI waveText; // Şu anki dalga bilgisini gösteren UI
+    public TextMeshProUGUI countdownText; // Hazırlık aşamasındaki geri sayımı gösteren UI
+    public TextMeshProUGUI weaponCostText; // Silah maliyetini gösteren UI
+    public Transform skillPanel; // Skillerin ikonlarını gösterecek panel
+    public GameObject skillIconPrefab; // Skill ikonları için prefab
 
     void Awake()
     {
@@ -25,14 +28,19 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void UpdateHealthUI(int currentHealth, int maxHealth)
+    {
+        if (healthText != null)
+        {
+            healthText.text = "Health: " + currentHealth + "/" + maxHealth;
+        }
+    }
+
     public void UpdateGoldUI(int gold)
     {
         if (goldText != null)
         {
             goldText.text = "Gold: " + gold;
-
-            // Altın miktarı güncellenirken basit bir animasyon
-            goldText.transform.DOScale(1.2f, 0.2f).SetLoops(2, LoopType.Yoyo).SetEase(Ease.OutBack);
         }
     }
 
@@ -41,28 +49,43 @@ public class UIManager : MonoBehaviour
         if (waveText != null)
         {
             waveText.text = "Wave: " + wave;
-
-            // Wave numarası güncellenirken basit bir animasyon
-            waveText.transform.DOScale(1.2f, 0.2f).SetLoops(2, LoopType.Yoyo).SetEase(Ease.OutBack);
         }
     }
 
-    public void UpdateCountdownUI(float seconds)
+    public void UpdateCountdownUI(float countdown)
     {
         if (countdownText != null)
         {
-            countdownText.text = "Next Wave In: " + Mathf.CeilToInt(seconds).ToString() + "s";
+            countdownText.text = "Next Wave In: " + Mathf.CeilToInt(countdown) + "s";
         }
     }
 
-    public void UpdateHealthUI(int currentHealth, int maxHealth)
+    public void UpdateWeaponCostUI(int cost)
     {
-        if (healthText != null)
+        if (weaponCostText != null)
         {
-            healthText.text = $"Health: {currentHealth}/{maxHealth}";
+            if (cost > 0)
+            {
+                weaponCostText.text = "Weapon Cost: " + cost + " Gold";
+            }
+            else
+            {
+                weaponCostText.text = "";
+            }
+        }
+    }
 
-            // Sağlık güncellenirken basit bir animasyon
-            healthText.transform.DOShakeScale(0.3f, 0.2f).SetEase(Ease.InOutBounce);
+    public void AddSkillIcon(Sprite skillIcon)
+    {
+        if (skillPanel != null && skillIconPrefab != null)
+        {
+            // Yeni skill ikonu oluştur ve panelin altına ekle
+            GameObject newIcon = Instantiate(skillIconPrefab, skillPanel);
+            Image iconImage = newIcon.GetComponent<Image>();
+            if (iconImage != null)
+            {
+                iconImage.sprite = skillIcon;
+            }
         }
     }
 }
