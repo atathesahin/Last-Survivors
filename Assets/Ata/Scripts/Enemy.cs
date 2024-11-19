@@ -26,8 +26,15 @@ public class Enemy : MonoBehaviour
         if (playerTransform != null)
         {
             Vector3 direction = (playerTransform.position - transform.position).normalized;
+
+            // Oyuncuya bakacak şekilde düşmanı döndür
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * moveSpeed);
+
+            // Oyuncuya doğru hareket et
             transform.position += direction * moveSpeed * Time.deltaTime;
 
+            // Eğer düşman oyuncuya çok yakınsa, saldırmaya çalış
             if (Vector3.Distance(transform.position, playerTransform.position) < 1.5f)
             {
                 TryAttackPlayer();

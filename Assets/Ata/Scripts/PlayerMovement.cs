@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Rigidbody playerRigidbody;
     [SerializeField] private VariableJoystick fixedJoystick;
     [SerializeField] private Transform playerTransform;
-    [SerializeField] private int moveSpeed = 5;
+    [SerializeField] public int moveSpeed = 5;
     
     private float horizontal;
     private float vertical;
@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void SetMovement()  
     {
+        
         playerRigidbody.velocity = GetNewVelocity();
         animationController.SetBool("run",horizontal != 0 || vertical != 0);
 
