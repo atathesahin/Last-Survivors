@@ -10,11 +10,11 @@ public class Player : MonoBehaviour
     public int hpRegenRate = 1;
     public int speed = 5;
     public int gold = 0;
-    public GameObject currentWeapon; // Oyuncunun kullandığı mevcut silah
-    public Transform weaponHolder; // Silahın elde tutulacağı pozisyon
+    public GameObject currentWeapon; 
+    public Transform weaponHolder; 
 
     private float lastAttackTime;
-    private List<Skill> acquiredSkills = new List<Skill>(); // Kazanılmış yeteneklerin listesi
+    private List<Skill> acquiredSkills = new List<Skill>(); 
 
     void Awake()
     {
@@ -31,8 +31,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        GainRandomSkill();  // Oyunun başında rastgele bir yetenek kazandır
-        EquipWeapon(currentWeapon); // Başlangıç silahını kuşan
+        GainRandomSkill();  
+        EquipWeapon(currentWeapon); 
     }
 
     void Update()
@@ -55,13 +55,13 @@ public class Player : MonoBehaviour
     public void GainGold(int amount)
     {
         gold += amount;
-        UIManager.Instance.UpdateGoldUI(gold); // Altın bilgisini güncelle
+        UIManager.Instance.UpdateGoldUI(gold); 
     }
 
     private void Die()
     {
         Debug.Log("Player öldü!");
-        // Oyuncu öldüğünde yapılacak işlemler
+      
     }
 
     public void GainRandomSkill()
@@ -79,7 +79,7 @@ public class Player : MonoBehaviour
             else
             {
                 acquiredSkills.Add(randomSkill);
-                randomSkill.ActivateSkill(this); // Yetenek etkinleştiriliyor
+                randomSkill.ActivateSkill(this); 
                 Debug.Log("Yeni yetenek kazandınız: " + randomSkill.skillName);
                 
                 UIManager.Instance.AddSkillIcon(randomSkill.icon);
@@ -100,11 +100,11 @@ public class Player : MonoBehaviour
 
         if (currentWeapon != null && currentWeapon != weapon)
         {
-            Destroy(currentWeapon); // Mevcut silahı kaldır
+            Destroy(currentWeapon);
         }
         currentWeapon = Instantiate(weapon, weaponHolder);
-        currentWeapon.transform.localPosition = new Vector3(0, 0.5f, 0); // Silahın konumunu ayarlayın
-        currentWeapon.transform.localRotation = Quaternion.Euler(-90, 0, 0); // Silahın rotasyonunu ayarlayın
+        currentWeapon.transform.localPosition = new Vector3(0, 0.5f, 0); 
+        currentWeapon.transform.localRotation = Quaternion.Euler(-90, 0, 0); 
         Debug.Log("Yeni silah kuşanıldı: " + currentWeapon.name);
     }
 
@@ -112,7 +112,7 @@ public class Player : MonoBehaviour
     {
         float closestDistance = Mathf.Infinity;
         Enemy closestEnemy = null;
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f); // 15 birimlik bir menzil içindeki düşmanları kontrol et
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f); 
 
         foreach (Collider hitCollider in hitColliders)
         {
@@ -148,7 +148,7 @@ public class Player : MonoBehaviour
         {
             gold -= cost;
             EquipWeapon(weapon);
-            UIManager.Instance.UpdateGoldUI(gold); // Altın bilgisini güncelle
+            UIManager.Instance.UpdateGoldUI(gold); 
             return true;
         }
         else
@@ -160,7 +160,7 @@ public class Player : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        // Sadece AOE yeteneği aktifken etki alanını görselleştirin
+        
         if (SkillManager.Instance != null && SkillManager.Instance.currentSkill is AoESkill)
         {
             Gizmos.color = Color.red;

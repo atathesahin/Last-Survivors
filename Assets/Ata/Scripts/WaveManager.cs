@@ -4,21 +4,21 @@ using System.Collections.Generic;
 
 public class WaveManager : MonoBehaviour
 {
-   public static WaveManager Instance;
+    public static WaveManager Instance;
 
     public int currentWave = 1;
     public int enemiesPerWave = 5;
     public float preparationTime = 30f;
     public GameObject enemyPrefab;
     public GameObject bossPrefab;
-    public Transform spawnPoint;
-    public GameObject[] weapons; // Silah çeşitliliği
-    public Transform[] weaponSpawnPoints; // Silahların rastgele çıkacağı noktalar
+    public Transform[] spawnPoints; // Birden fazla spawn noktası için array
+    public GameObject[] weapons; 
+    public Transform[] weaponSpawnPoints;
 
     private List<GameObject> activeEnemies = new List<GameObject>();
     private bool isPreparationPhase = false;
-    private GameObject spawnedWeapon; // Hazırlık aşamasında çıkan silah
-    private int spawnedWeaponCost; // Spawnlanan silahın maliyeti
+    private GameObject spawnedWeapon; 
+    private int spawnedWeaponCost; 
 
     void Awake()
     {
@@ -35,7 +35,7 @@ public class WaveManager : MonoBehaviour
     void Start()
     {
         StartCoroutine(StartWave());
-        UIManager.Instance.UpdateWaveUI(currentWave); // İlk wave bilgisini günceller
+        UIManager.Instance.UpdateWaveUI(currentWave); 
     }
 
     IEnumerator StartWave()
@@ -44,13 +44,10 @@ public class WaveManager : MonoBehaviour
         {
             yield return SpawnWave();
 
-            // Tüm düşmanlar yok edilene kadar bekle
             yield return new WaitUntil(() => activeEnemies.Count == 0);
 
-            // Tüm düşmanlar yok edildikten sonra hazırlık süresine gir
             yield return PreparationPhase();
 
-            // Hazırlık süresinde rastgele bir yetenek kazandır
             Debug.Log("Hazırlık aşaması bitti, rastgele yetenek kazandırılıyor...");
             Player.Instance.GainRandomSkill();
             Debug.Log("Yetenek kazanımı işlemi çağrıldı.");
@@ -64,14 +61,20 @@ public class WaveManager : MonoBehaviour
 
         for (int i = 0; i < enemyCount; i++)
         {
-            GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+            // Rastgele bir spawn noktası seç
+            Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+            // Düşmanı spawn et
+            GameObject enemy = Instantiate(enemyPrefab, randomSpawnPoint.position, Quaternion.identity);
+
             activeEnemies.Add(enemy);
             yield return new WaitForSeconds(0.5f);
         }
 
         if (currentWave % 10 == 0)  
         {
-            GameObject boss = Instantiate(bossPrefab, spawnPoint.position, Quaternion.identity);
+            Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            GameObject boss = Instantiate(bossPrefab, randomSpawnPoint.position, Quaternion.identity);
             activeEnemies.Add(boss); 
         }
 
@@ -94,7 +97,6 @@ public class WaveManager : MonoBehaviour
             yield return null;
         }
 
-        // Hazırlık süresi bitince silahı yok et
         if (spawnedWeapon != null)
         {
             Destroy(spawnedWeapon);
@@ -110,7 +112,6 @@ public class WaveManager : MonoBehaviour
         return isPreparationPhase;
     }
 
-
     public void EnemyDefeated(GameObject enemy)
     {
         if (activeEnemies.Contains(enemy))
@@ -119,7 +120,6 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-   
     private void SpawnWeaponForPreparation()
     {
         if (weaponSpawnPoints.Length > 0 && weapons.Length > 0)
@@ -131,7 +131,6 @@ public class WaveManager : MonoBehaviour
             spawnedWeaponCost = Random.Range(100, 1001); 
             Debug.Log("Spawnlanan silah maliyeti: " + spawnedWeaponCost);
 
-         
             UIManager.Instance.UpdateWeaponCostUI(spawnedWeaponCost);
         }
     }

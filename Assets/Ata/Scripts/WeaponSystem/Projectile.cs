@@ -17,7 +17,7 @@ public class Projectile : MonoBehaviour
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);
-                Destroy(gameObject); // Çarpışmadan sonra mermi yok edilir
+                Destroy(gameObject); 
             }
         }
     }

@@ -5,7 +5,7 @@ public class SkillManager : MonoBehaviour
     public static SkillManager Instance;
 
     public Skill[] allSkills;
-    public Skill currentSkill; // Mevcut aktif yetenek
+    public Skill currentSkill; 
 
     void Awake()
     {
@@ -25,7 +25,7 @@ public class SkillManager : MonoBehaviour
         if (allSkills.Length > 0)
         {
             int randomIndex = Random.Range(0, allSkills.Length);
-            currentSkill = allSkills[randomIndex]; // Kazanılan yeteneği currentSkill olarak ayarla
+            currentSkill = allSkills[randomIndex]; 
             return currentSkill;
         }
         return null;

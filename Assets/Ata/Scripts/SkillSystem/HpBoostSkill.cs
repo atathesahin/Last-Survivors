@@ -17,7 +17,7 @@ public class HPBoostSkill : Skill
         if (currentLevel < maxLevel)
         {
             currentLevel++;
-            ActivateSkill(Player.Instance); // Her seviyede tekrar etkinleştir
+            ActivateSkill(Player.Instance); 
             Debug.Log($"{skillName} upgraded to level {currentLevel}");
         }
     }

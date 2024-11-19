@@ -224,5 +224,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   damage: 3
-  moveSpeed: 1
+  moveSpeed: 3
   damageCooldown: 1.5

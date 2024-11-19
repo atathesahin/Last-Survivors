@@ -4,10 +4,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewAoESkill", menuName = "Skills/Active/AoESkill")]
 public class AoESkill : Skill
 {
-   public float baseRadius = 2f; // AOE etkisinin yarıçapı
-    public int damage = 10; // Verilecek hasar
-    public float damageInterval = 1f; // Her ne kadar sıklıkla hasar verilecek
-    public GameObject aoeIndicatorPrefab; // AOE alanını gösterecek obje prefab'i
+   public float baseRadius = 2f; 
+    public int damage = 10; 
+    public float damageInterval = 1f; 
+    public GameObject aoeIndicatorPrefab; 
 
     private GameObject aoeIndicatorInstance;
 
@@ -16,7 +16,7 @@ public class AoESkill : Skill
         player.StartCoroutine(ApplyAoE(player));
         Debug.Log($"{skillName} activated! AOE damage area created.");
 
-        // AOE alanı göstergesi oluştur veya güncelle
+        
         if (aoeIndicatorInstance == null && aoeIndicatorPrefab != null)
         {
             aoeIndicatorInstance = Instantiate(aoeIndicatorPrefab, player.transform.position + new Vector3(0, +0.04f, 0), Quaternion.identity);
@@ -46,7 +46,6 @@ aoeIndicatorInstance.transform.localScale = new Vector3(baseRadius * currentLeve
                     }
                 }
             }
-            // Süre sonsuz olduğundan elapsedTime kullanımı kaldırıldı
             yield return new WaitForSeconds(damageInterval);
         }
     }

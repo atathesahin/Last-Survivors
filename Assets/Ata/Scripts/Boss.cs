@@ -35,11 +35,11 @@ public class Boss : MonoBehaviour
 
     private void TryAttackPlayer()
     {
-        // Hasar bekleme süresi dolduysa hasar ver
+        
         if (Time.time >= lastDamageTime + damageCooldown)
         {
             Player.Instance.TakeDamage(damage);
-            lastDamageTime = Time.time; // Son hasar zamanını güncelle
+            lastDamageTime = Time.time; 
         }
     }
 
@@ -54,7 +54,7 @@ public class Boss : MonoBehaviour
 
     private void Die()
     {
-        Player.Instance.GainGold(goldReward);  // Altın kazandır
-        gameObject.SetActive(false);           // Bossu devre dışı bırak
+        Player.Instance.GainGold(goldReward);  
+        Destroy(gameObject);         
     }
 }

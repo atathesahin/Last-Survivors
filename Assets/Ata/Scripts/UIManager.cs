@@ -8,13 +8,13 @@ public class UIManager : MonoBehaviour
 {
      public static UIManager Instance;
 
-    public TextMeshProUGUI healthText; // Oyuncunun sağlık bilgisini gösteren UI
-    public TextMeshProUGUI goldText; // Oyuncunun altın miktarını gösteren UI
-    public TextMeshProUGUI waveText; // Şu anki dalga bilgisini gösteren UI
-    public TextMeshProUGUI countdownText; // Hazırlık aşamasındaki geri sayımı gösteren UI
-    public TextMeshProUGUI weaponCostText; // Silah maliyetini gösteren UI
-    public Transform skillPanel; // Skillerin ikonlarını gösterecek panel
-    public GameObject skillIconPrefab; // Skill ikonları için prefab
+    public TextMeshProUGUI healthText; 
+    public TextMeshProUGUI goldText; 
+    public TextMeshProUGUI waveText; 
+    public TextMeshProUGUI countdownText; 
+    public TextMeshProUGUI weaponCostText; 
+    public Transform skillPanel;
+    public GameObject skillIconPrefab; 
 
     void Awake()
     {
@@ -79,7 +79,7 @@ public class UIManager : MonoBehaviour
     {
         if (skillPanel != null && skillIconPrefab != null)
         {
-            // Yeni skill ikonu oluştur ve panelin altına ekle
+       
             GameObject newIcon = Instantiate(skillIconPrefab, skillPanel);
             Image iconImage = newIcon.GetComponent<Image>();
             if (iconImage != null)

@@ -106,7 +106,7 @@ MonoBehaviour:
     type: 3}
   shootPoint: {fileID: 6464937311430224763}
   projectileSpeed: 25
-  attackDamage: 1
+  attackDamage: 10
   attackCooldown: 1.5
 --- !u!1 &7691396119107895702
 GameObject:
