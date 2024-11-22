@@ -19,7 +19,7 @@ public class AoESkill : Skill
         
         if (aoeIndicatorInstance == null && aoeIndicatorPrefab != null)
         {
-            aoeIndicatorInstance = Instantiate(aoeIndicatorPrefab, player.transform.position + new Vector3(0, +0.04f, 0), Quaternion.identity);
+            aoeIndicatorInstance = Instantiate(aoeIndicatorPrefab, player.transform.position + new Vector3(0, +0.58f, 0), Quaternion.identity);
 aoeIndicatorInstance.transform.localScale = new Vector3(baseRadius * currentLevel * 3, 0.01f, baseRadius * currentLevel * 3);
             aoeIndicatorInstance.transform.parent = player.transform;
         }

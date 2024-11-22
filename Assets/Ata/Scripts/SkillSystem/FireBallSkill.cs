@@ -20,6 +20,7 @@ public class FireballSkill : Skill
             Debug.Log($"{skillName} activated! Fireballs are being spawned.");
         }
     }
+    
 
     private IEnumerator SpawnFireballs(Player player)
     {

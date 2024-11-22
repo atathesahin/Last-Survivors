@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class WaveManager : MonoBehaviour
 {
@@ -11,14 +12,20 @@ public class WaveManager : MonoBehaviour
     public float preparationTime = 30f;
     public GameObject enemyPrefab;
     public GameObject bossPrefab;
-    public Transform[] spawnPoints; // Birden fazla spawn noktası için array
+    public Transform[] spawnPoints; 
     public GameObject[] weapons; 
     public Transform[] weaponSpawnPoints;
+    public GameObject centralObject; 
 
     private List<GameObject> activeEnemies = new List<GameObject>();
     private bool isPreparationPhase = false;
     private GameObject spawnedWeapon; 
     private int spawnedWeaponCost; 
+    private bool isPlayerInCentralObject = false; 
+    
+  
+    public ObjectPool damagePopupPool; 
+
 
     void Awake()
     {
@@ -49,8 +56,16 @@ public class WaveManager : MonoBehaviour
             yield return PreparationPhase();
 
             Debug.Log("Hazırlık aşaması bitti, rastgele yetenek kazandırılıyor...");
-            Player.Instance.GainRandomSkill();
-            Debug.Log("Yetenek kazanımı işlemi çağrıldı.");
+            
+            if (isPlayerInCentralObject)
+            {
+                Debug.Log("Oyuncu central object üzerinde, yetenek kazandırılıyor...");
+                Player.Instance.GainRandomSkill();
+            }
+            else
+            {
+                Debug.Log("Oyuncu central object üzerinde değil, yetenek kazandırılmadı.");
+            }
         }
     }
 
@@ -67,6 +82,13 @@ public class WaveManager : MonoBehaviour
             // Düşmanı spawn et
             GameObject enemy = Instantiate(enemyPrefab, randomSpawnPoint.position, Quaternion.identity);
 
+            // DamagePopupPool'u düşmana ilet
+            Enemy enemyScript = enemy.GetComponent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.SetDamagePopupPool(damagePopupPool);
+            }
+
             activeEnemies.Add(enemy);
             yield return new WaitForSeconds(0.5f);
         }
@@ -75,6 +97,14 @@ public class WaveManager : MonoBehaviour
         {
             Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
             GameObject boss = Instantiate(bossPrefab, randomSpawnPoint.position, Quaternion.identity);
+
+            
+            Enemy bossScript = boss.GetComponent<Enemy>();
+            if (bossScript != null)
+            {
+                bossScript.SetDamagePopupPool(damagePopupPool);
+            }
+
             activeEnemies.Add(boss); 
         }
 
@@ -87,24 +117,57 @@ public class WaveManager : MonoBehaviour
         isPreparationPhase = true;
         float countdown = preparationTime;
 
-        // Bir silah spawn et
+        
+        ChangeCentralObjectColor(Color.yellow);
+
+        
         SpawnWeaponForPreparation();
 
         while (countdown > 0)
         {
             countdown -= Time.deltaTime;
-            UIManager.Instance.UpdateCountdownUI(countdown); 
+            UIManager.Instance.UpdateCountdownUI(countdown);
             yield return null;
         }
+
+        
+        ChangeCentralObjectColor(Color.red);
 
         if (spawnedWeapon != null)
         {
             Destroy(spawnedWeapon);
-            UIManager.Instance.UpdateWeaponCostUI(0); 
+            UIManager.Instance.UpdateWeaponCostUI(0);
+        }
+
+        // Mesafe kontrolü
+        float distance = Vector3.Distance(Player.Instance.transform.position, centralObject.transform.position);
+        float activationRadius = 2f; // Oyuncunun "üzerinde" kabul edileceği mesafe
+
+        if (distance <= activationRadius)
+        {
+           
+            Player.Instance.GainRandomSkill();
+        }
+        else
+        {
+           
         }
 
         isPreparationPhase = false;
-        UIManager.Instance.UpdateCountdownUI(0);  
+        UIManager.Instance.UpdateCountdownUI(0);
+    }
+
+    private void ChangeCentralObjectColor(Color newColor)
+    {
+        if (centralObject != null)
+        {
+            Renderer renderer = centralObject.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+              
+                renderer.material.DOColor(newColor, 4f); 
+            }
+        }
     }
 
     public bool IsInPreparationPhase()
@@ -145,5 +208,23 @@ public class WaveManager : MonoBehaviour
     public int GetSpawnedWeaponCost()
     {
         return spawnedWeaponCost;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInCentralObject = true;
+         
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInCentralObject = false;
+        
+        }
     }
 }

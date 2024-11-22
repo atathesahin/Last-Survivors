@@ -4,8 +4,8 @@ public class SkillManager : MonoBehaviour
 {
     public static SkillManager Instance;
 
-    public Skill[] allSkills;
-    public Skill currentSkill; 
+    public Skill[] allSkills; // Tüm skilllerin ScriptableObject referansları
+    public Skill currentSkill; // Aktif skill
 
     void Awake()
     {
@@ -13,6 +13,12 @@ public class SkillManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // ScriptableObject'lerin çalışma zamanı kopyalarını oluştur
+            for (int i = 0; i < allSkills.Length; i++)
+            {
+                allSkills[i] = Instantiate(allSkills[i]);
+            }
         }
         else
         {
@@ -20,12 +26,19 @@ public class SkillManager : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        ResetSkills(); // Oyun başlangıcında skill seviyelerini sıfırla
+    }
+
     public Skill GetRandomSkill()
     {
         if (allSkills.Length > 0)
         {
             int randomIndex = Random.Range(0, allSkills.Length);
-            currentSkill = allSkills[randomIndex]; 
+
+            // Random seçilen skill'i kopyala
+            currentSkill = Instantiate(allSkills[randomIndex]);
             return currentSkill;
         }
         return null;
@@ -33,6 +46,23 @@ public class SkillManager : MonoBehaviour
 
     public void UpgradeSkill(Skill skill)
     {
-        skill.UpgradeSkill();
+        if (skill.currentLevel < skill.maxLevel)
+        {
+            skill.UpgradeSkill();
+            Debug.Log($"{skill.skillName} upgraded to level {skill.currentLevel}.");
+        }
+        else
+        {
+            Debug.Log($"{skill.skillName} is already at max level.");
+        }
+    }
+
+    public void ResetSkills()
+    {
+        foreach (Skill skill in allSkills)
+        {
+            skill.currentLevel = 1; // Varsayılan seviye
+        }
+        Debug.Log("All skills reset to default level.");
     }
 }

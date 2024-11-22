@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1f36b3f1bee429c44b64c5ad01969b79,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.088852
+      value: -13.6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f36b3f1bee429c44b64c5ad01969b79,
         type: 3}
@@ -21,7 +21,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1f36b3f1bee429c44b64c5ad01969b79,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.26500222
+      value: 0.41
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f36b3f1bee429c44b64c5ad01969b79,
         type: 3}
@@ -56,6 +56,16 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1f36b3f1bee429c44b64c5ad01969b79,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5818889320171079249, guid: 1f36b3f1bee429c44b64c5ad01969b79,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5818889320171079249, guid: 1f36b3f1bee429c44b64c5ad01969b79,
+        type: 3}
+      propertyPath: m_LightProbeUsage
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1f36b3f1bee429c44b64c5ad01969b79,
@@ -131,10 +141,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.49727404
-  m_Height: 2.5998034
+  m_Radius: 0.43260783
+  m_Height: 2.6792803
   m_Direction: 1
-  m_Center: {x: 0, y: 1.3503428, z: 0.2451024}
+  m_Center: {x: 8.729611e-10, y: 1.3869569, z: 0.2097738}
 --- !u!114 &1622606169921337627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,5 +159,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   damage: 3
-  moveSpeed: 2
+  moveSpeed: 1
   damageCooldown: 1.5
+  stoppingDistance: 1.5
+  damagePopupPool: {fileID: 5881276791386092972, guid: 05efc7c69ed01e948a261327437f9db5,
+    type: 3}

@@ -20,8 +20,6 @@ MonoBehaviour:
     type: 3}
   fireballSpeed: 10
   damage: 10
-  spawnInterval: 2
+  spawnInterval: 1
   fireballSize: 1
   spawnOffset: 1.5
-  burnDamage: 2
-  burnTime: 1
