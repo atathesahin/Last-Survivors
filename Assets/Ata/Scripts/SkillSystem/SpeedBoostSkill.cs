@@ -7,7 +7,7 @@ public class SpeedBoostSkill : Skill
 
     public override void ActivateSkill(Player player)
     {
-        player.speed += speedIncreasePerLevel * currentLevel;
+        //player.speed += speedIncreasePerLevel * currentLevel;
     }
 
     public override void UpgradeSkill()

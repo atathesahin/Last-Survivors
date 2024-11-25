@@ -75,17 +75,62 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void AddSkillIcon(Sprite skillIcon)
+    public void AddSkillIcon(Skill skill)
     {
         if (skillPanel != null && skillIconPrefab != null)
         {
-       
+            // Yeni yetenek ikonu oluştur
             GameObject newIcon = Instantiate(skillIconPrefab, skillPanel);
             Image iconImage = newIcon.GetComponent<Image>();
             if (iconImage != null)
             {
-                iconImage.sprite = skillIcon;
+                iconImage.sprite = skill.icon;
+            }
+
+            // Seviye bilgisi için Text bileşeni oluştur
+            TextMeshProUGUI levelText = newIcon.GetComponentInChildren<TextMeshProUGUI>();
+            if (levelText != null)
+            {
+                levelText.text = "LvL: " + skill.currentLevel;
             }
         }
     }
+    public void UpdateSkillIcon(Skill skill)
+    {
+        foreach (Transform child in skillPanel)
+        {
+            Image iconImage = child.GetComponent<Image>();
+            if (iconImage != null && iconImage.sprite == skill.icon)
+            {
+                // Seviye metnini güncelle ve rengini değiştir
+                TextMeshProUGUI levelText = child.GetComponentInChildren<TextMeshProUGUI>();
+                if (levelText != null)
+                {
+                    levelText.text = "LvL: " + skill.currentLevel;
+
+                    // Renkleri seviye bazında değiştirme
+                    Color targetColor = Color.white; // Varsayılan renk
+                    switch (skill.currentLevel)
+                    {
+                        case 1:
+                            targetColor = Color.green; // Level 1 - Yeşil
+                            break;
+                        case 2:
+                            targetColor = Color.blue; // Level 2 - Mavi
+                            break;
+                        case 3:
+                            targetColor = new Color(0.5f, 0f, 0.5f); // Mor (RGB: 128, 0, 128)
+                            break;
+                        case 4:
+                            targetColor = new Color(1f, 0.65f, 0f); // Turuncu (RGB: 255, 165, 0)
+                            break;
+                    }
+
+                    // DOTween ile metin rengini değiştirme
+                    levelText.DOColor(targetColor, 0.5f); // 0.5 saniyelik geçiş süresi
+                }
+            }
+        }
+    }
+
 }

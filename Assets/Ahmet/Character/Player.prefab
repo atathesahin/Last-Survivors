@@ -52,7 +52,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 8c30a89e40f665c4398bbac30e6c7520,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -10.65
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c30a89e40f665c4398bbac30e6c7520,
         type: 3}
@@ -98,6 +98,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5125404229545534701, guid: 8c30a89e40f665c4398bbac30e6c7520,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -150,7 +155,9 @@ MonoBehaviour:
   playerRigidbody: {fileID: 7213369701968015097}
   fixedJoystick: {fileID: 0}
   playerTransform: {fileID: 2086296018067696851}
-  moveSpeed: 255
+  moveSpeed: 5
+  rotationSpeed: 10
+  inputThreshold: 0.1
 --- !u!95 &6440175469256503246
 Animator:
   serializedVersion: 5
@@ -218,10 +225,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.38715363
+  m_Radius: 0.45685863
   m_Height: 2.597091
   m_Direction: 1
-  m_Center: {x: 0, y: 1.4, z: 0}
+  m_Center: {x: 0, y: 1.4, z: -0.06970501}
 --- !u!114 &4732321805904794019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,7 +244,6 @@ MonoBehaviour:
   health: 100
   maxHealth: 100
   hpRegenRate: 1
-  speed: 5
   gold: 0
   currentWeapon: {fileID: 7003586376971716916, guid: 2236abea99a691d44a67c1b9090b9905,
     type: 3}

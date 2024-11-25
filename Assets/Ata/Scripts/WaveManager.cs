@@ -7,26 +7,26 @@ public class WaveManager : MonoBehaviour
 {
     public static WaveManager Instance;
 
+    [Header("Wave Settings")]
     public int currentWave = 1;
     public int enemiesPerWave = 5;
     public float preparationTime = 30f;
+    [Header("Enemies")]
     public GameObject enemyPrefab;
     public GameObject bossPrefab;
+    [Header("Spawn Settings")]
     public Transform[] spawnPoints; 
-    public GameObject[] weapons; 
-    public Transform[] weaponSpawnPoints;
     public GameObject centralObject; 
 
     private List<GameObject> activeEnemies = new List<GameObject>();
     private bool isPreparationPhase = false;
-    private GameObject spawnedWeapon; 
-    private int spawnedWeaponCost; 
-    private bool isPlayerInCentralObject = false; 
+    [SerializeField] private WeaponManager weaponManager;
     
-  
     public ObjectPool damagePopupPool; 
 
-
+    private float centralObjectRadius = 3f; 
+    private bool isPlayerInCentralObjectArea = false; 
+    
     void Awake()
     {
         if (Instance == null)
@@ -41,8 +41,18 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
+        if (weaponManager == null)
+        {
+            Debug.LogError("WeaponManager referansı atanmadı!");
+        }
+        else
+        {
+            Debug.Log("WeaponManager başarıyla bulundu.");
+        }
+
         StartCoroutine(StartWave());
         UIManager.Instance.UpdateWaveUI(currentWave); 
+        StartCoroutine(CheckPlayerPosition());
     }
 
     IEnumerator StartWave()
@@ -57,7 +67,7 @@ public class WaveManager : MonoBehaviour
 
             Debug.Log("Hazırlık aşaması bitti, rastgele yetenek kazandırılıyor...");
             
-            if (isPlayerInCentralObject)
+            if (isPlayerInCentralObjectArea)
             {
                 Debug.Log("Oyuncu central object üzerinde, yetenek kazandırılıyor...");
                 Player.Instance.GainRandomSkill();
@@ -76,13 +86,9 @@ public class WaveManager : MonoBehaviour
 
         for (int i = 0; i < enemyCount; i++)
         {
-            // Rastgele bir spawn noktası seç
             Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-
-            // Düşmanı spawn et
             GameObject enemy = Instantiate(enemyPrefab, randomSpawnPoint.position, Quaternion.identity);
 
-            // DamagePopupPool'u düşmana ilet
             Enemy enemyScript = enemy.GetComponent<Enemy>();
             if (enemyScript != null)
             {
@@ -98,7 +104,6 @@ public class WaveManager : MonoBehaviour
             Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
             GameObject boss = Instantiate(bossPrefab, randomSpawnPoint.position, Quaternion.identity);
 
-            
             Enemy bossScript = boss.GetComponent<Enemy>();
             if (bossScript != null)
             {
@@ -117,11 +122,8 @@ public class WaveManager : MonoBehaviour
         isPreparationPhase = true;
         float countdown = preparationTime;
 
-        
         ChangeCentralObjectColor(Color.yellow);
-
-        
-        SpawnWeaponForPreparation();
+        weaponManager.SpawnWeaponForPreparation();
 
         while (countdown > 0)
         {
@@ -130,28 +132,9 @@ public class WaveManager : MonoBehaviour
             yield return null;
         }
 
-        
         ChangeCentralObjectColor(Color.red);
 
-        if (spawnedWeapon != null)
-        {
-            Destroy(spawnedWeapon);
-            UIManager.Instance.UpdateWeaponCostUI(0);
-        }
-
-        // Mesafe kontrolü
-        float distance = Vector3.Distance(Player.Instance.transform.position, centralObject.transform.position);
-        float activationRadius = 2f; // Oyuncunun "üzerinde" kabul edileceği mesafe
-
-        if (distance <= activationRadius)
-        {
-           
-            Player.Instance.GainRandomSkill();
-        }
-        else
-        {
-           
-        }
+        weaponManager.DestroySpawnedWeapon();
 
         isPreparationPhase = false;
         UIManager.Instance.UpdateCountdownUI(0);
@@ -164,7 +147,6 @@ public class WaveManager : MonoBehaviour
             Renderer renderer = centralObject.GetComponent<Renderer>();
             if (renderer != null)
             {
-              
                 renderer.material.DOColor(newColor, 4f); 
             }
         }
@@ -183,48 +165,28 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    private void SpawnWeaponForPreparation()
+    IEnumerator CheckPlayerPosition()
     {
-        if (weaponSpawnPoints.Length > 0 && weapons.Length > 0)
+        while (true)
         {
-            int randomSpawnIndex = Random.Range(0, weaponSpawnPoints.Length);
-            int randomWeaponIndex = Random.Range(0, weapons.Length);
-
-            spawnedWeapon = Instantiate(weapons[randomWeaponIndex], weaponSpawnPoints[randomSpawnIndex].position, Quaternion.identity);
-            spawnedWeaponCost = Random.Range(100, 1001); 
-            Debug.Log("Spawnlanan silah maliyeti: " + spawnedWeaponCost);
-
-            UIManager.Instance.UpdateWeaponCostUI(spawnedWeaponCost);
-        }
-    }
-
-    public void WeaponPickedUp(GameObject weapon)
-    {
-        List<GameObject> updatedWeapons = new List<GameObject>(weapons);
-        updatedWeapons.Remove(weapon);
-        weapons = updatedWeapons.ToArray();
-    }
-
-    public int GetSpawnedWeaponCost()
-    {
-        return spawnedWeaponCost;
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerInCentralObject = true;
-         
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerInCentralObject = false;
-        
+            yield return new WaitForSeconds(0.5f); // 0.5 saniyede bir kontrol et
+            float distance = Vector3.Distance(Player.Instance.transform.position, centralObject.transform.position);
+            if (distance <= centralObjectRadius)
+            {
+                if (!isPlayerInCentralObjectArea)
+                {
+                    Debug.Log("Oyuncu central object alanına girdi.");
+                    isPlayerInCentralObjectArea = true;
+                }
+            }
+            else
+            {
+                if (isPlayerInCentralObjectArea)
+                {
+                    Debug.Log("Oyuncu central object alanından çıktı.");
+                    isPlayerInCentralObjectArea = false;
+                }
+            }
         }
     }
 }

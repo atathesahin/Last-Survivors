@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody playerRigidbody;
     [SerializeField] private VariableJoystick fixedJoystick;
     [SerializeField] private Transform playerTransform;
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private int moveSpeed = 5;
     [SerializeField] private float rotationSpeed = 10f; // Dönüş hızı
     [SerializeField] private float inputThreshold = 0.1f; // Minimum joystick değeri için eşik
 

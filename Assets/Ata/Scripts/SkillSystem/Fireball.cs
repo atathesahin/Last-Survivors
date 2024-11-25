@@ -15,7 +15,7 @@ public class Fireball : MonoBehaviour
     {
         // Fireball'un ileriye doğru hareketi
         transform.Translate(Vector3.forward * (speed * Time.deltaTime));
-        Destroy(gameObject,5);
+        Destroy(gameObject,4);
     }
 
     private void OnTriggerEnter(Collider other)

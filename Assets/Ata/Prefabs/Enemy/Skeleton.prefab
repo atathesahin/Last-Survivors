@@ -159,7 +159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   damage: 3
-  moveSpeed: 1
+  moveSpeed: 3
   damageCooldown: 1.5
   stoppingDistance: 1.5
   damagePopupPool: {fileID: 5881276791386092972, guid: 05efc7c69ed01e948a261327437f9db5,

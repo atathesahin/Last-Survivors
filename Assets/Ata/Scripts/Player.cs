@@ -8,14 +8,14 @@ public class Player : MonoBehaviour
     public int health = 100;
     public int maxHealth = 100;
     public int hpRegenRate = 1;
-    public int speed = 5;
+    //public int speed = 5;
     public int gold = 0;
     public GameObject currentWeapon; 
     public Transform weaponHolder; 
 
     private float lastAttackTime;
-    private List<Skill> acquiredSkills = new List<Skill>(); 
-
+    private List<Skill> acquiredSkills = new List<Skill>();
+    private int currentlevel = 1;
     void Awake()
     {
         if (Instance == null)
@@ -75,6 +75,9 @@ public class Player : MonoBehaviour
             {
                 existingSkill.UpgradeSkill();
                 Debug.Log("Yetenek yükseltildi: " + existingSkill.skillName);
+            
+                // UI'deki skill level bilgisini güncelle
+                UIManager.Instance.UpdateSkillIcon(existingSkill);
             }
             else
             {
@@ -82,7 +85,7 @@ public class Player : MonoBehaviour
                 randomSkill.ActivateSkill(this); 
                 Debug.Log("Yeni yetenek kazandınız: " + randomSkill.skillName);
                 
-                UIManager.Instance.AddSkillIcon(randomSkill.icon);
+                UIManager.Instance.AddSkillIcon(randomSkill);
             }
         }
         else
@@ -139,33 +142,6 @@ public class Player : MonoBehaviour
                     lastAttackTime = Time.time;
                 }
             }
-        }
-    }
-
-    public bool TryPurchaseWeapon(GameObject weapon, int cost)
-    {
-        if (gold >= cost)
-        {
-            gold -= cost;
-            EquipWeapon(weapon);
-            UIManager.Instance.UpdateGoldUI(gold); 
-            return true;
-        }
-        else
-        {
-            Debug.Log("Yeterli altın yok!");
-            return false;
-        }
-    }
-
-    void OnDrawGizmos()
-    {
-        
-        if (SkillManager.Instance != null && SkillManager.Instance.currentSkill is AoESkill)
-        {
-            Gizmos.color = Color.red;
-            float radius = ((AoESkill)SkillManager.Instance.currentSkill).baseRadius * ((AoESkill)SkillManager.Instance.currentSkill).currentLevel;
-            Gizmos.DrawWireSphere(transform.position, radius);
         }
     }
     

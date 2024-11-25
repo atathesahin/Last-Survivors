@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FireBall
   m_EditorClassIdentifier: 
   skillName: FireBall
-  icon: {fileID: 21300000, guid: fcc6e4cd08d4c3f4d98e2988601fcb20, type: 3}
+  icon: {fileID: 21300000, guid: 2cb906c42ebf6a14e9b15be80d175ee4, type: 3}
   maxLevel: 4
   currentLevel: 1
   fireballPrefab: {fileID: 8767606784505782664, guid: 842539766579d7c488bf0ff1b9489c8c,

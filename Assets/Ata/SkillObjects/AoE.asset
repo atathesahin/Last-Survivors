@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AoE
   m_EditorClassIdentifier: 
   skillName: AoE
-  icon: {fileID: 21300000, guid: a378c1d2c065eec4596c5c2b1a7b93f0, type: 3}
+  icon: {fileID: 21300000, guid: a0242bb178cb0a74e852c24742645e20, type: 3}
   maxLevel: 4
   currentLevel: 1
   baseRadius: 2

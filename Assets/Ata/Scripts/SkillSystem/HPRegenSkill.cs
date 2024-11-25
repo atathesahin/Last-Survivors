@@ -8,7 +8,7 @@ public class HpRegenSkill : Skill
     public override void ActivateSkill(Player player)
     {
         player.StartCoroutine(ApplyRegen(player));
-        Debug.Log("HpRegen etkinleştirildi, yenilenme miktarı: " + regenAmount * currentLevel);
+       
     }
 
     private System.Collections.IEnumerator ApplyRegen(Player player)
@@ -17,7 +17,7 @@ public class HpRegenSkill : Skill
         {
             yield return new WaitForSeconds(1f);
             player.health = Mathf.Min(player.health + (int)(regenAmount * currentLevel), player.maxHealth);
-            Debug.Log($"Health regenerated: {player.health}/{player.maxHealth}");
+            
         }
     }
 

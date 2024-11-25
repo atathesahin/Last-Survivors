@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: SummonSkill
   m_EditorClassIdentifier: 
   skillName: SummonSkill
-  icon: {fileID: 21300000, guid: f99e6c2f918217f41a7a97cc1821269c, type: 3}
+  icon: {fileID: 21300000, guid: 2083b69e43744d848976300c43f3bbf3, type: 3}
   maxLevel: 4
   currentLevel: 1
   skeletonPrefab: {fileID: 5563568053536963618, guid: 7b81d879efde06443a5b43c4faedb019,
     type: 3}
-  attackRange: 8
+  attackRange: 10
   damage: 10
   skeletonCount: 1

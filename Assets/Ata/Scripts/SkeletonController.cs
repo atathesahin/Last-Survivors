@@ -10,7 +10,7 @@ public class SkeletonController : MonoBehaviour
     private Transform targetEnemy;
     public float moveSpeed = 3f;
     public Animator animator;
-    public float stoppingDistance = 1.5f; // Distance to stop before colliding with enemy
+    public float stoppingDistance = 2f; // Distance to stop before colliding with enemy
 
     public void Initialize(Player player, float attackRange, int damage)
     {
@@ -92,7 +92,7 @@ public class SkeletonController : MonoBehaviour
                 animator.SetTrigger("attack");
                 enemy.TakeDamage(damage);
                 lastAttackTime = Time.time;
-                Debug.Log($"Skeleton attacked {enemy.name} for {damage} damage.");
+                
             }
         }
     }

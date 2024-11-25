@@ -19,16 +19,13 @@ public class ProjectileShooter : MonoBehaviour
                 projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
                 projectile.GetComponent<Projectile>().Initialize(attackDamage); 
                 Destroy(projectile, 5f); 
-                Debug.Log("Mermi fırlatıldı: " + projectile.name);
+                
             }
             else
             {
                 Debug.LogWarning("Shoot point atanmadı!");
             }
         }
-        else
-        {
-            Debug.LogWarning("magicProjectilePrefab atanmamış!");
-        }
+      
     }
 }

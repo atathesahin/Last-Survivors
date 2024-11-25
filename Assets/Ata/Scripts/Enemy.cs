@@ -62,7 +62,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(int damageAmount)
     {
-        Debug.Log($"[Enemy] Alınan hasar: {damageAmount}"); 
+        
         ShowDamage(damageAmount);
 
         health -= damageAmount;
@@ -90,15 +90,9 @@ public class Enemy : MonoBehaviour
             {
                 damagePopup.ShowDamage(damageAmount); // Doğrudan ShowDamage çağırılıyor
             }
-            else
-            {
-                Debug.LogError("DamagePopup scripti prefab'de eksik!");
-            }
+           
         }
-        else
-        {
-            Debug.LogError("DamagePopup prefab'ı Object Pool'dan alınamadı!");
-        }
+       
     }
 
     private void Die()

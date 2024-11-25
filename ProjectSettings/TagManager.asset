@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - SkillPoint
+  - WeaponBox
   layers:
   - Default
   - TransparentFX

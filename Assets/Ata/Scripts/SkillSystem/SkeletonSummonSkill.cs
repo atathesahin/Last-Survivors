@@ -10,19 +10,44 @@ public class SkeletonSummonSkill : Skill
     public int damage = 10; // Damage dealt by the skeleton
     public int skeletonCount = 1; // Number of skeletons summoned
     private List<GameObject> activeSkeletons = new List<GameObject>();
-
+    
     public override void ActivateSkill(Player player)
     {
+        if (player == null)
+        {
+            Debug.LogWarning("Player reference is null. Cannot activate skill.");
+            return;
+        }
+
+        // Önce eski iskeletleri yok et
+        foreach (var skeleton in activeSkeletons)
+        {
+            Destroy(skeleton);
+        }
+        activeSkeletons.Clear();
+
+        int maxAttempts = 10; // Maksimum deneme sayısı
         for (int i = 0; i < skeletonCount; i++)
         {
-            Vector3 spawnPosition = player.transform.position + new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f));
+            Vector3 spawnOffset;
+            int attempts = 0;
+            do
+            {
+                spawnOffset = new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f));
+                attempts++;
+            } while (Physics.CheckSphere(player.transform.position + spawnOffset, 0.5f) && attempts < maxAttempts);
+
+            Vector3 spawnPosition = player.transform.position + spawnOffset;
             GameObject skeleton = Instantiate(skeletonPrefab, spawnPosition, Quaternion.identity);
             activeSkeletons.Add(skeleton);
             SkeletonController skeletonController = skeleton.GetComponent<SkeletonController>();
-            skeletonController.Initialize(player, attackRange, damage);
+            if (skeletonController != null)
+            {
+                skeletonController.Initialize(player, attackRange, damage);
+            }
         }
 
-        Debug.Log($"{skillName} activated! {skeletonCount} skeleton(s) summoned.");
+        Debug.LogWarning($"{skillName} activated! {skeletonCount} skeleton(s) summoned with attack range {attackRange}.");
     }
 
     public override void UpgradeSkill()
@@ -30,22 +55,22 @@ public class SkeletonSummonSkill : Skill
         if (currentLevel < maxLevel)
         {
             currentLevel++;
+            
+            // Her seviye yükseldiğinde yeni iskeletleri summon et
+            skeletonCount = currentLevel;
+            if (currentLevel == 4)
+            {
+                // Attack range artırılmıyor.
+            }
 
-            if (currentLevel == 2)
+            Debug.LogWarning($"{skillName} upgraded to level {currentLevel}. Number of skeletons is now {skeletonCount}, attack range is {attackRange}.");
+            
+            // Yeni seviyede tekrar iskelet summon et
+            Player player = FindObjectOfType<Player>();
+            if (player != null)
             {
-                skeletonCount = 2; // Increase number of skeletons
-                Debug.Log($"{skillName} upgraded to level {currentLevel}. Number of skeletons increased to {skeletonCount}.");
-            }
-            else if (currentLevel == 3)
-            {
-                skeletonCount = 3; // Increase number of skeletons
-                Debug.Log($"{skillName} upgraded to level {currentLevel}. Number of skeletons increased to {skeletonCount}.");
-            }
-            else if (currentLevel == 4)
-            {
-                attackRange = 8f; // Increase attack range
-                Debug.Log($"{skillName} upgraded to level {currentLevel}. Attack range increased to {attackRange}.");
+                ActivateSkill(player);
             }
         }
     }
-}
+} 
