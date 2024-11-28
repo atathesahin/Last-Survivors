@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class SkillManager : MonoBehaviour
 {
@@ -33,14 +34,28 @@ public class SkillManager : MonoBehaviour
 
     public Skill GetRandomSkill()
     {
-        if (allSkills.Length > 0)
+        // Maksimum seviyeye ulaşmamış skilleri filtrele
+        List<Skill> availableSkills = new List<Skill>();
+
+        foreach (Skill skill in allSkills)
         {
-            int randomIndex = Random.Range(0, allSkills.Length);
+            if (skill.currentLevel < skill.maxLevel)
+            {
+                availableSkills.Add(skill);
+            }
+        }
+
+        // Eğer mevcut seviye atlanabilecek beceri kalmadıysa, null döndür
+        if (availableSkills.Count > 0)
+        {
+            int randomIndex = Random.Range(0, availableSkills.Count);
 
             // Random seçilen skill'i kopyala
-            currentSkill = Instantiate(allSkills[randomIndex]);
+            currentSkill = Instantiate(availableSkills[randomIndex]);
             return currentSkill;
         }
+        
+        Debug.Log("All skills are at max level.");
         return null;
     }
 

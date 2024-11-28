@@ -8,7 +8,6 @@ public class DamagePopup : MonoBehaviour
    
     public void ShowDamage(int damage)
     {
-        
         damageText.text = damage.ToString();
 
         // Karakter rengi değişimi başlat
@@ -18,6 +17,7 @@ public class DamagePopup : MonoBehaviour
         transform.DOMoveY(transform.position.y + 1f, 0.5f).SetEase(Ease.OutQuad);
         damageText.DOFade(0, 0.5f).SetDelay(0.3f).OnComplete(() =>
         {
+            DOTween.Kill(damageText); // Aktif animasyonları durdur
             gameObject.SetActive(false);
         });
     }
@@ -30,7 +30,6 @@ public class DamagePopup : MonoBehaviour
         // Karakterlerin mesh bilgileri
         for (int i = 0; i < textInfo.characterCount; i++)
         {
-            // Geçerli karakter bilgisi
             TMP_CharacterInfo charInfo = textInfo.characterInfo[i];
 
             // Karakter görünür mü? (örneğin boşlukları atla)
@@ -54,7 +53,7 @@ public class DamagePopup : MonoBehaviour
                     vertexColors[vertexIndex + 2] = x;
                     vertexColors[vertexIndex + 3] = x;
 
-                    // Mesh'i güncelle
+                    // Mesh'i güncelle (daha az sıklıkla yaparak optimizasyon sağla)
                     damageText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
                 },
                 endColor,

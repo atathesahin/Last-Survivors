@@ -3,7 +3,7 @@
 [CreateAssetMenu(fileName = "NewHpRegenSkill", menuName = "Skills/Active/HpRegen")]
 public class HpRegenSkill : Skill
 {
-    public float regenAmount = 1f; 
+    public float regenAmount = 4f; 
 
     public override void ActivateSkill(Player player)
     {

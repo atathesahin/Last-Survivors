@@ -8,5 +8,16 @@ public abstract class Skill : ScriptableObject
     public int currentLevel = 1;
 
     public abstract void ActivateSkill(Player player);
-    public abstract void UpgradeSkill();
+    public virtual void UpgradeSkill()
+    {
+        if (currentLevel < maxLevel)
+        {
+            currentLevel++;
+            Debug.Log($"{skillName} upgraded to level {currentLevel}.");
+        }
+        else
+        {
+            Debug.Log($"{skillName} is already at max level.");
+        }
+    }
 }

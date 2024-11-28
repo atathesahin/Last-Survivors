@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewAoESkill", menuName = "Skills/Active/AoESkill")]
 public class AoESkill : Skill
 {
-   public float baseRadius = 2f; 
+    public float baseRadius = 2f; 
     public int damage = 10; 
     public float damageInterval = 1f; 
     public GameObject aoeIndicatorPrefab; 
@@ -16,11 +16,10 @@ public class AoESkill : Skill
         player.StartCoroutine(ApplyAoE(player));
         Debug.Log($"{skillName} activated! AOE damage area created.");
 
-        
         if (aoeIndicatorInstance == null && aoeIndicatorPrefab != null)
         {
             aoeIndicatorInstance = Instantiate(aoeIndicatorPrefab, player.transform.position + new Vector3(0, +0.58f, 0), Quaternion.identity);
-aoeIndicatorInstance.transform.localScale = new Vector3(baseRadius * currentLevel * 3, 0.01f, baseRadius * currentLevel * 3);
+            aoeIndicatorInstance.transform.localScale = new Vector3(baseRadius * currentLevel * 3, 0.01f, baseRadius * currentLevel * 3);
             aoeIndicatorInstance.transform.parent = player.transform;
         }
         if (aoeIndicatorInstance != null)
@@ -52,14 +51,17 @@ aoeIndicatorInstance.transform.localScale = new Vector3(baseRadius * currentLeve
 
     public override void UpgradeSkill()
     {
-        if (aoeIndicatorInstance != null)
-        {
-            aoeIndicatorInstance.transform.localScale = new Vector3(baseRadius * currentLevel * 2, 0.01f, baseRadius * currentLevel * 2);
-        }
         if (currentLevel < maxLevel)
         {
             currentLevel++;
+            damage += 25;
+            damageInterval -= 0.1f;
             Debug.Log($"{skillName} upgraded to level {currentLevel}");
+        }
+
+        if (aoeIndicatorInstance != null)
+        {
+            aoeIndicatorInstance.transform.localScale = new Vector3(baseRadius * currentLevel * 2, 0.01f, baseRadius * currentLevel * 2);
         }
     }
 }

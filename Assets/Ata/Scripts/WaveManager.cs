@@ -13,7 +13,6 @@ public class WaveManager : MonoBehaviour
     public float preparationTime = 30f;
     [Header("Enemies")]
     public GameObject enemyPrefab;
-    public GameObject bossPrefab;
     [Header("Spawn Settings")]
     public Transform[] spawnPoints; 
     public GameObject centralObject; 
@@ -93,24 +92,13 @@ public class WaveManager : MonoBehaviour
             if (enemyScript != null)
             {
                 enemyScript.SetDamagePopupPool(damagePopupPool);
+               
+                enemyScript.SetHealth(20 + (currentWave * 5)); 
+                enemyScript.SetSpeed(0.05f * currentWave);
             }
 
             activeEnemies.Add(enemy);
             yield return new WaitForSeconds(0.5f);
-        }
-
-        if (currentWave % 10 == 0)  
-        {
-            Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-            GameObject boss = Instantiate(bossPrefab, randomSpawnPoint.position, Quaternion.identity);
-
-            Enemy bossScript = boss.GetComponent<Enemy>();
-            if (bossScript != null)
-            {
-                bossScript.SetDamagePopupPool(damagePopupPool);
-            }
-
-            activeEnemies.Add(boss); 
         }
 
         currentWave++;
@@ -169,7 +157,7 @@ public class WaveManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(0.5f); // 0.5 saniyede bir kontrol et
+            yield return new WaitForSeconds(0.5f); 
             float distance = Vector3.Distance(Player.Instance.transform.position, centralObject.transform.position);
             if (distance <= centralObjectRadius)
             {

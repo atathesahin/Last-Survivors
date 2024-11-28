@@ -29,12 +29,14 @@ public class ObjectPool : MonoBehaviour
         else
         {
             GameObject obj = Instantiate(prefab);
+            obj.SetActive(true);
             return obj;
         }
     }
 
     public void ReturnToPool(GameObject obj)
     {
+        // Geri dönen nesneyi sıfırla
         obj.SetActive(false);
         pool.Enqueue(obj);
     }

@@ -8,14 +8,16 @@ public class Player : MonoBehaviour
     public int health = 100;
     public int maxHealth = 100;
     public int hpRegenRate = 1;
-    //public int speed = 5;
     public int gold = 0;
     public GameObject currentWeapon; 
     public Transform weaponHolder; 
-
+    public Animator animator;
     private float lastAttackTime;
-    private List<Skill> acquiredSkills = new List<Skill>();
-    private int currentlevel = 1;
+    private Dictionary<string, Skill> acquiredSkills = new Dictionary<string, Skill>();
+    public PlayerMovement playerMovement;
+    private Renderer playerRenderer;
+    [SerializeField] private float rotationSpeed = 5f; // Smooth dönüşüm için float olarak güncellendi
+
     void Awake()
     {
         if (Instance == null)
@@ -31,13 +33,51 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        playerRenderer = GetComponent<Renderer>();
         GainRandomSkill();  
         EquipWeapon(currentWeapon); 
     }
 
     void Update()
     {
+        RotateTowardsClosestEnemy(); // Her zaman en yakın düşmana dön
         AttackClosestEnemy();
+    }
+
+    private void RotateTowardsClosestEnemy()
+    {
+        if (!playerMovement.IsMoving()) // Eğer karakter hareket etmiyorsa en yakın düşmana dön
+        {
+            Enemy closestEnemy = GetClosestEnemy();
+            if (closestEnemy != null)
+            {
+                Vector3 direction = (closestEnemy.transform.position - transform.position).normalized;
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+            }
+        }
+    }
+
+    private Enemy GetClosestEnemy()
+    {
+        float closestDistance = Mathf.Infinity;
+        Enemy closestEnemy = null;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f); // Arama yarıçapı
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Enemy"))
+            {
+                float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = hitCollider.GetComponent<Enemy>();
+                }
+            }
+        }
+
+        return closestEnemy;
     }
 
     public void TakeDamage(int damageAmount)
@@ -61,36 +101,47 @@ public class Player : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player öldü!");
-      
     }
 
     public void GainRandomSkill()
     {
-        Skill randomSkill = SkillManager.Instance.GetRandomSkill();
-
-        if (randomSkill != null)
+        List<Skill> availableSkills = new List<Skill>();
+        foreach (Skill skill in SkillManager.Instance.allSkills)
         {
-            Skill existingSkill = acquiredSkills.Find(skill => skill.skillName == randomSkill.skillName);
-            if (existingSkill != null)
+            if (!acquiredSkills.ContainsKey(skill.skillName) || acquiredSkills[skill.skillName].currentLevel < skill.maxLevel)
+            {
+                availableSkills.Add(skill);
+            }
+        }
+
+        if (availableSkills.Count == 0)
+        {
+            Debug.LogWarning("Tüm skiller maksimum seviyede. Yeni beceri kazanılamıyor.");
+            return;
+        }
+
+        Skill randomSkill = availableSkills[UnityEngine.Random.Range(0, availableSkills.Count)];
+
+        if (acquiredSkills.ContainsKey(randomSkill.skillName))
+        {
+            Skill existingSkill = acquiredSkills[randomSkill.skillName];
+            if (existingSkill.currentLevel < existingSkill.maxLevel)
             {
                 existingSkill.UpgradeSkill();
                 Debug.Log("Yetenek yükseltildi: " + existingSkill.skillName);
-            
-                // UI'deki skill level bilgisini güncelle
+
                 UIManager.Instance.UpdateSkillIcon(existingSkill);
-            }
-            else
-            {
-                acquiredSkills.Add(randomSkill);
-                randomSkill.ActivateSkill(this); 
-                Debug.Log("Yeni yetenek kazandınız: " + randomSkill.skillName);
-                
-                UIManager.Instance.AddSkillIcon(randomSkill);
+                ApplyGlowEffect();
             }
         }
         else
         {
-            Debug.LogWarning("Rastgele beceri atanamadı.");
+            acquiredSkills.Add(randomSkill.skillName, randomSkill);
+            randomSkill.ActivateSkill(this);
+            Debug.Log("Yeni yetenek kazandınız: " + randomSkill.skillName);
+
+            UIManager.Instance.AddSkillIcon(randomSkill);
+            ApplyGlowEffect();
         }
     }
 
@@ -113,37 +164,55 @@ public class Player : MonoBehaviour
 
     private void AttackClosestEnemy()
     {
-        float closestDistance = Mathf.Infinity;
-        Enemy closestEnemy = null;
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f); 
-
-        foreach (Collider hitCollider in hitColliders)
+        if (currentWeapon != null && playerMovement != null)
         {
-            if (hitCollider.CompareTag("Enemy"))
-            {
-                float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestEnemy = hitCollider.GetComponent<Enemy>();
-                }
-            }
-        }
+            ProjectileShooter shooter = currentWeapon.GetComponent<ProjectileShooter>();
 
-        if (closestEnemy != null)
-        {
-            // Mermi fırlat
-            if (currentWeapon != null)
+            if (shooter != null)
             {
-                ProjectileShooter shooter = currentWeapon.GetComponent<ProjectileShooter>();
-                if (shooter != null && Time.time >= lastAttackTime + shooter.attackCooldown)
+                Enemy closestEnemy = GetClosestEnemy();
+                if (closestEnemy != null && Time.time >= lastAttackTime + shooter.attackCooldown)
                 {
+                    playerMovement.PlayAttackAnimation();
                     shooter.ShootProjectile(closestEnemy.transform);
                     lastAttackTime = Time.time;
                 }
             }
         }
     }
-    
-    
+
+    private void ApplyGlowEffect()
+    {
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+
+        foreach (Renderer renderer in renderers)
+        {
+            Material[] materials = renderer.materials;
+
+            foreach (Material mat in materials)
+            {
+                mat.SetColor("_EmissionColor", Color.yellow);
+                mat.EnableKeyword("_EMISSION");
+            }
+        }
+
+        StartCoroutine(RemoveGlowEffect(3f)); 
+    }
+
+    private System.Collections.IEnumerator RemoveGlowEffect(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+
+        foreach (Renderer renderer in renderers)
+        {
+            Material[] materials = renderer.materials;
+
+            foreach (Material mat in materials)
+            {
+                mat.SetColor("_EmissionColor", Color.black);
+            }
+        }
+    }
 }

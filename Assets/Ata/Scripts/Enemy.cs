@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-
 public class Enemy : MonoBehaviour
 {
-    public int health = 50;
-    public int damage = 10;
+    public int health = 20;
+    public int damage = 3;
     public float moveSpeed = 3f;
     private Transform playerTransform;
 
@@ -27,6 +26,15 @@ public class Enemy : MonoBehaviour
     {
         damagePopupPool = pool;
     }
+    public void SetHealth(int newHealth)
+    {
+        health = newHealth;
+    }
+
+    public void SetSpeed(float speed)
+    {
+        moveSpeed += speed;
+    }
 
     private void MoveTowardsPlayer()
     {
@@ -34,7 +42,6 @@ public class Enemy : MonoBehaviour
         {
             Vector3 direction = (playerTransform.position - transform.position).normalized;
 
-            
             if (Vector3.Distance(transform.position, playerTransform.position) > stoppingDistance)
             {
                 Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -42,9 +49,7 @@ public class Enemy : MonoBehaviour
 
                 transform.position += direction * moveSpeed * Time.deltaTime;
             }
-
-            // Eğer oyuncuya yeterince yakınsa saldırmayı dene
-            if (Vector3.Distance(transform.position, playerTransform.position) <= stoppingDistance)
+            else
             {
                 TryAttackPlayer();
             }
@@ -62,7 +67,6 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(int damageAmount)
     {
-        
         ShowDamage(damageAmount);
 
         health -= damageAmount;
@@ -88,11 +92,9 @@ public class Enemy : MonoBehaviour
             DamagePopup damagePopup = popup.GetComponent<DamagePopup>();
             if (damagePopup != null)
             {
-                damagePopup.ShowDamage(damageAmount); // Doğrudan ShowDamage çağırılıyor
+                damagePopup.ShowDamage(damageAmount);
             }
-           
         }
-       
     }
 
     private void Die()

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SpeedBoost
   m_EditorClassIdentifier: 
   skillName: SpeedBoost
-  icon: {fileID: 21300000, guid: 6d553c0babb24ac419986defec5f701c, type: 3}
+  icon: {fileID: 21300000, guid: b3672d507114fd3438f4e18909faba88, type: 3}
   maxLevel: 4
   currentLevel: 1
   speedIncreasePerLevel: 1
