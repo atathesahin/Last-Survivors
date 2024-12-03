@@ -81,7 +81,7 @@ public class UIManager : MonoBehaviour
     {
         if (skillPanel != null && skillIconPrefab != null)
         {
-            // Yeni yetenek ikonu oluştur
+      
             GameObject newIcon = Instantiate(skillIconPrefab, skillPanel);
             Image iconImage = newIcon.GetComponent<Image>();
             if (iconImage != null)
@@ -89,7 +89,7 @@ public class UIManager : MonoBehaviour
                 iconImage.sprite = skill.icon;
             }
 
-            // Seviye bilgisi için Text bileşeni oluştur
+      
             TextMeshProUGUI levelText = newIcon.GetComponentInChildren<TextMeshProUGUI>();
             if (levelText != null)
             {
@@ -104,32 +104,32 @@ public class UIManager : MonoBehaviour
             Image iconImage = child.GetComponent<Image>();
             if (iconImage != null && iconImage.sprite == skill.icon)
             {
-                // Seviye metnini güncelle ve rengini değiştir
+        
                 TextMeshProUGUI levelText = child.GetComponentInChildren<TextMeshProUGUI>();
                 if (levelText != null)
                 {
                     levelText.text = "LvL: " + skill.currentLevel;
 
-                    // Renkleri seviye bazında değiştirme
-                    Color targetColor = Color.white; // Varsayılan renk
+               
+                    Color targetColor = Color.white; 
                     switch (skill.currentLevel)
                     {
                         case 1:
-                            targetColor = Color.green; // Level 1 - Yeşil
+                            targetColor = Color.green; 
                             break;
                         case 2:
-                            targetColor = Color.blue; // Level 2 - Mavi
+                            targetColor = Color.blue; 
                             break;
                         case 3:
-                            targetColor = new Color(0.5f, 0f, 0.5f); // Mor (RGB: 128, 0, 128)
+                            targetColor = new Color(0.5f, 0f, 0.5f); 
                             break;
                         case 4:
-                            targetColor = new Color(1f, 0.65f, 0f); // Turuncu (RGB: 255, 165, 0)
+                            targetColor = new Color(1f, 0.65f, 0f); 
                             break;
                     }
 
-                    // DOTween ile metin rengini değiştirme
-                    levelText.DOColor(targetColor, 0.5f); // 0.5 saniyelik geçiş süresi
+               
+                    levelText.DOColor(targetColor, 0.5f); 
                 }
             }
         }
@@ -141,11 +141,11 @@ public class UIManager : MonoBehaviour
             skillNotificationText.text = skillName;
             skillNotificationText.gameObject.SetActive(true);
 
-            // DOTween kullanarak birkaç saniye sonra metni gizle
+        
             skillNotificationText.DOFade(0, 3.5f).SetDelay(2f).OnComplete(() =>
             {
                 skillNotificationText.gameObject.SetActive(false);
-                skillNotificationText.alpha = 1; // Metin tekrar kullanılacağı için saydamlığını geri getir
+                skillNotificationText.alpha = 1; 
             });
         }
     }

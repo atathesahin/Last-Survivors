@@ -6,9 +6,9 @@ using UnityEngine;
 public class SkeletonSummonSkill : Skill
 {
     public GameObject skeletonPrefab;
-    public float attackRange = 5f; // Range within which the skeleton attacks enemies
-    public int damage = 10; // Damage dealt by the skeleton
-    public int skeletonCount = 1; // Number of skeletons summoned
+    public float attackRange = 5f; 
+    public int damage = 10; 
+    public int skeletonCount = 1; 
     private List<GameObject> activeSkeletons = new List<GameObject>();
     
     public override void ActivateSkill(Player player)
@@ -19,14 +19,14 @@ public class SkeletonSummonSkill : Skill
             return;
         }
 
-        // Önce eski iskeletleri yok et
+       
         foreach (var skeleton in activeSkeletons)
         {
             Destroy(skeleton);
         }
         activeSkeletons.Clear();
 
-        int maxAttempts = 10; // Maksimum deneme sayısı
+        int maxAttempts = 10; 
         for (int i = 0; i < skeletonCount; i++)
         {
             Vector3 spawnOffset;
@@ -56,11 +56,11 @@ public class SkeletonSummonSkill : Skill
         {
             currentLevel++;
             
-            // Her seviye yükseldiğinde yeni iskeletleri summon et
+            
             skeletonCount = currentLevel;
             if (currentLevel == 4)
             {
-                // Attack range artırılmıyor.
+                
             }
 
             Debug.LogWarning($"{skillName} upgraded to level {currentLevel}. Number of skeletons is now {skeletonCount}, attack range is {attackRange}.");

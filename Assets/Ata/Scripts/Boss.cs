@@ -5,7 +5,7 @@ public class Boss : MonoBehaviour
     public int health = 500;
     public int damage = 25;
     public float moveSpeed = 2f;
-    public int goldReward = 50;  // Öldüğünde kazandırılacak altın miktarı
+    public int goldReward = 50;  
     private Transform playerTransform;
     public float damageCooldown = 1.5f;
     private float lastDamageTime;

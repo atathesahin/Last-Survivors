@@ -19,7 +19,6 @@ public class GamePauseManager : MonoBehaviour
             tapToScreenText.DOFade(0, 1f).SetLoops(-1, LoopType.Yoyo); 
         }
     }
-
     void Update()
     {
        
@@ -28,7 +27,6 @@ public class GamePauseManager : MonoBehaviour
             ResumeGame();
         }
     }
-
     
     public void OnPauseButtonPressed()
     {
@@ -41,8 +39,6 @@ public class GamePauseManager : MonoBehaviour
             PauseGame();
         }
     }
-
-    // Oyunu devam ettir
     public void ResumeGame()
     {
         pauseMenuUI.SetActive(false); 
@@ -50,8 +46,7 @@ public class GamePauseManager : MonoBehaviour
         isGamePaused = false; 
         AudioListener.pause = false; 
     }
-
-    // Oyunu durdur
+    
     public void PauseGame()
     {
         pauseMenuUI.SetActive(true); 

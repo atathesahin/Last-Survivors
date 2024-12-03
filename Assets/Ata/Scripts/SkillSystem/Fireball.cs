@@ -13,7 +13,7 @@ public class Fireball : MonoBehaviour
     public float lifetime = 5f;
     private void Update()
     {
-        // Fireball'un ileriye doğru hareketi
+      
         transform.Translate(Vector3.forward * (speed * Time.deltaTime));
         Destroy(gameObject,4);
     }

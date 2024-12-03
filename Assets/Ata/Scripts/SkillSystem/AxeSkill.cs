@@ -6,10 +6,10 @@ using DG.Tweening;
 public class AxeSkill : Skill
 {
     public GameObject axePrefab;
-    public float spawnInterval = 3f; // Baltaların spawnlanma aralığı
-    public int damage = 25; // Başlangıç hasarı
+    public float spawnInterval = 3f; 
+    public int damage = 25; 
     public float range = 5f; 
-    public float minDistanceFromPlayer = 2f; // Karaktere minimum mesafe
+    public float minDistanceFromPlayer = 2f; 
     private Coroutine spawnCoroutine;
 
     public override void ActivateSkill(Player player)
@@ -35,20 +35,20 @@ public class AxeSkill : Skill
         for (int i = 0; i < axeCount; i++)
         {
             Vector3 spawnPosition = GetRandomPositionAroundPlayer(player.transform.position, range, minDistanceFromPlayer);
-            spawnPosition.y = 10f; // Baltanın yukarıdan doğması
+            spawnPosition.y = 10f; 
 
             // Balta oluştur
             GameObject axe = Instantiate(axePrefab, spawnPosition, Quaternion.Euler(Random.Range(45,90), 0, 0)); // Rotasyonu ayarla
 
-            // DOTween animasyonu: Balta aşağı süzülsün
+            
             Vector3 targetPosition = spawnPosition;
             targetPosition.y = 0.5f;
             axe.transform.DOMove(targetPosition, 1f).SetEase(Ease.InQuad).OnComplete(() =>
             {
-                Destroy(axe, 1.5f); // Baltayı 2 saniye sonra yok et
+                Destroy(axe, 1.5f); 
             });
 
-            // Axe script'ine hasar bilgisini aktar
+            
             Axe axeComponent = axe.GetComponent<Axe>();
             if (axeComponent != null)
             {
@@ -66,10 +66,10 @@ public class AxeSkill : Skill
         do
         {
             Vector3 randomDirection = Random.insideUnitSphere * range;
-            randomDirection.y = 0; // Rastgele pozisyonda y eksenini sabitle
+            randomDirection.y = 0; 
             spawnPosition = playerPosition + randomDirection;
         }
-        while (Vector3.Distance(playerPosition, spawnPosition) < minDistance); // Minimum mesafeyi kontrol et
+        while (Vector3.Distance(playerPosition, spawnPosition) < minDistance); 
 
         return spawnPosition;
     }
@@ -79,7 +79,7 @@ public class AxeSkill : Skill
         if (currentLevel < maxLevel)
         {
             currentLevel++;
-            damage += 15; // Her seviyede hasar +15 artar
+            damage += 15;
             range += 5;
             if (currentLevel == 2)
             {
@@ -91,7 +91,7 @@ public class AxeSkill : Skill
             }
             else if (currentLevel == 4)
             {
-                spawnInterval = 5; // Spawnlanma süresi azalır
+                spawnInterval = 5; 
                 Debug.Log($"{skillName} upgraded to level {currentLevel}. Spawn interval decreased. Damage: {damage}");
             }
         }

@@ -1,23 +1,19 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     public static Player Instance;
+
     public int health = 100;
     public int maxHealth = 100;
     public int hpRegenRate = 1;
     public int gold = 0;
-    public GameObject currentWeapon; 
-    public Transform weaponHolder; 
-    public Animator animator;
-    private float lastAttackTime;
+    public Transform weaponHolder;
+    public PlayerMovement playerMovementAttack;
+
     private Dictionary<string, Skill> acquiredSkills = new Dictionary<string, Skill>();
-    public PlayerMovement playerMovement;
-    private Renderer playerRenderer;
-    [SerializeField] private float rotationSpeed = 5f; // Smooth dönüşüm için float olarak güncellendi
 
     void Awake()
     {
@@ -34,51 +30,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        playerRenderer = GetComponent<Renderer>();
-        GainRandomSkill();  
-        EquipWeapon(currentWeapon); 
-    }
-
-    void Update()
-    {
-        RotateTowardsClosestEnemy(); // Her zaman en yakın düşmana dön
-        AttackClosestEnemy();
-    }
-
-    private void RotateTowardsClosestEnemy()
-    {
-        if (!playerMovement.IsMoving()) // Eğer karakter hareket etmiyorsa en yakın düşmana dön
-        {
-            Enemy closestEnemy = GetClosestEnemy();
-            if (closestEnemy != null)
-            {
-                Vector3 direction = (closestEnemy.transform.position - transform.position).normalized;
-                Quaternion lookRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
-            }
-        }
-    }
-
-    private Enemy GetClosestEnemy()
-    {
-        float closestDistance = Mathf.Infinity;
-        Enemy closestEnemy = null;
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f); // Arama yarıçapı
-
-        foreach (Collider hitCollider in hitColliders)
-        {
-            if (hitCollider.CompareTag("Enemy"))
-            {
-                float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestEnemy = hitCollider.GetComponent<Enemy>();
-                }
-            }
-        }
-
-        return closestEnemy;
+        GainRandomSkill();
+        EquipWeapon(playerMovementAttack.currentWeapon);
     }
 
     public void TakeDamage(int damageAmount)
@@ -96,7 +49,7 @@ public class Player : MonoBehaviour
     public void GainGold(int amount)
     {
         gold += amount;
-        UIManager.Instance.UpdateGoldUI(gold); 
+        UIManager.Instance.UpdateGoldUI(gold);
     }
 
     private void Die()
@@ -133,7 +86,6 @@ public class Player : MonoBehaviour
                 Debug.Log("Yetenek yükseltildi: " + existingSkill.skillName);
 
                 UIManager.Instance.UpdateSkillIcon(existingSkill);
-                ApplyGlowEffect();
                 UIManager.Instance.ShowSkillNotification($"{existingSkill.skillName} upgraded to level {existingSkill.currentLevel}");
             }
         }
@@ -144,7 +96,6 @@ public class Player : MonoBehaviour
             Debug.Log("Yeni yetenek kazandınız: " + randomSkill.skillName);
 
             UIManager.Instance.AddSkillIcon(randomSkill);
-            ApplyGlowEffect();
             UIManager.Instance.ShowSkillNotification($"New Skill Acquired: {randomSkill.skillName}");
         }
     }
@@ -156,67 +107,13 @@ public class Player : MonoBehaviour
             return;
         }
 
-        if (currentWeapon != null && currentWeapon != weapon)
+        if (playerMovementAttack.currentWeapon != null && playerMovementAttack.currentWeapon != weapon)
         {
-            Destroy(currentWeapon);
+            Destroy(playerMovementAttack.currentWeapon);
         }
-        currentWeapon = Instantiate(weapon, weaponHolder);
-        currentWeapon.transform.localPosition = new Vector3(0, 0.5f, 0); 
-        currentWeapon.transform.localRotation = Quaternion.Euler(-90, 0, 0); 
-        Debug.Log("Yeni silah kuşanıldı: " + currentWeapon.name);
-    }
-
-    private void AttackClosestEnemy()
-    {
-        if (currentWeapon != null && playerMovement != null)
-        {
-            ProjectileShooter shooter = currentWeapon.GetComponent<ProjectileShooter>();
-
-            if (shooter != null)
-            {
-                Enemy closestEnemy = GetClosestEnemy();
-                if (closestEnemy != null && Time.time >= lastAttackTime + shooter.attackCooldown)
-                {
-                    playerMovement.PlayAttackAnimation();
-                    shooter.ShootProjectile(closestEnemy.transform);
-                    lastAttackTime = Time.time;
-                }
-            }
-        }
-    }
-
-    private void ApplyGlowEffect()
-    {
-        Renderer[] renderers = GetComponentsInChildren<Renderer>();
-
-        foreach (Renderer renderer in renderers)
-        {
-            Material[] materials = renderer.materials;
-
-            foreach (Material mat in materials)
-            {
-                mat.SetColor("_EmissionColor", Color.yellow);
-                mat.EnableKeyword("_EMISSION");
-            }
-        }
-
-        StartCoroutine(RemoveGlowEffect(3f)); 
-    }
-
-    private System.Collections.IEnumerator RemoveGlowEffect(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        
-        Renderer[] renderers = GetComponentsInChildren<Renderer>();
-
-        foreach (Renderer renderer in renderers)
-        {
-            Material[] materials = renderer.materials;
-
-            foreach (Material mat in materials)
-            {
-                mat.SetColor("_EmissionColor", Color.black);
-            }
-        }
+        playerMovementAttack.currentWeapon = Instantiate(weapon, weaponHolder);
+        playerMovementAttack.currentWeapon.transform.localPosition = new Vector3(0, 0.5f, 0);
+        playerMovementAttack.currentWeapon.transform.localRotation = Quaternion.Euler(-90, 0, 0);
+        Debug.Log("Yeni silah kuşanıldı: " + playerMovementAttack.currentWeapon.name);
     }
 }

@@ -36,7 +36,6 @@ public class ObjectPool : MonoBehaviour
 
     public void ReturnToPool(GameObject obj)
     {
-        // Geri dönen nesneyi sıfırla
         obj.SetActive(false);
         pool.Enqueue(obj);
     }

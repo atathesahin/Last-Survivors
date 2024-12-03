@@ -6,9 +6,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody playerRigidbody;
     [SerializeField] private VariableJoystick fixedJoystick;
     [SerializeField] private Transform playerTransform;
-    [SerializeField] private int moveSpeed = 5;
-    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float rotationSpeed = 5f;
     [SerializeField] private float inputThreshold = 0.1f;
+
+    public GameObject currentWeapon;
+    private float lastAttackTime;
 
     private Vector3 movementInput;
 
@@ -16,12 +19,13 @@ public class PlayerMovement : MonoBehaviour
     {
         GetMovementInput();
         UpdateAnimation();
+        AttackClosestEnemy();  // Her karede saldırı kontrolü yap
     }
 
     void FixedUpdate()
     {
         SetMovement();
-        SetRotation();
+        RotateTowardsMovementOrEnemy();
     }
 
     private void GetMovementInput()
@@ -44,19 +48,85 @@ public class PlayerMovement : MonoBehaviour
         playerRigidbody.velocity = newVelocity;
     }
 
-    private void SetRotation()
-    {
-        if (movementInput.magnitude > inputThreshold)
-        {
-            Quaternion joystickRotation = Quaternion.LookRotation(movementInput);
-            playerTransform.rotation = Quaternion.Slerp(playerTransform.rotation, joystickRotation, rotationSpeed * Time.fixedDeltaTime);
-        }
-    }
-
     private void UpdateAnimation()
     {
         bool isRunning = movementInput.magnitude > inputThreshold;
         animationController.SetBool("run", isRunning);
+    }
+
+    private void RotateTowardsMovementOrEnemy()
+    {
+        Enemy closestEnemy = GetClosestEnemy();
+
+        if (closestEnemy != null)
+        {
+            Vector3 direction = (closestEnemy.transform.position - transform.position).normalized;
+
+            if (direction.magnitude > 0.1f)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                playerTransform.rotation = Quaternion.Slerp(playerTransform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            }
+        }
+        else if (movementInput.magnitude > inputThreshold)
+        {
+            Quaternion moveRotation = Quaternion.LookRotation(movementInput);
+            playerTransform.rotation = Quaternion.Slerp(playerTransform.rotation, moveRotation, rotationSpeed * Time.fixedDeltaTime);
+        }
+    }
+
+    private Enemy GetClosestEnemy()
+    {
+        float closestDistance = Mathf.Infinity;
+        Enemy closestEnemy = null;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f);
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Enemy"))
+            {
+                float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = hitCollider.GetComponent<Enemy>();
+                }
+            }
+        }
+
+        return closestEnemy;
+    }
+
+    private void AttackClosestEnemy()
+    {
+        if (currentWeapon != null)
+        {
+
+            ProjectileShooter shooter = currentWeapon.GetComponent<ProjectileShooter>();
+            if (shooter != null && Time.time >= lastAttackTime + shooter.attackCooldown)
+            {
+                Enemy closestEnemy = GetClosestEnemy();
+                if (closestEnemy != null)
+                {
+                    PlayAttackAnimation();
+                    shooter.ShootProjectile(closestEnemy.transform);
+                    lastAttackTime = Time.time;
+                }
+            }
+
+       
+            MeleeWeapon meleeWeapon = currentWeapon.GetComponent<MeleeWeapon>();
+            if (meleeWeapon != null && Time.time >= lastAttackTime + meleeWeapon.attackCooldown)
+            {
+                Enemy closestEnemy = GetClosestEnemy();
+                if (closestEnemy != null)
+                {
+                    PlayAttackAnimation();
+                    meleeWeapon.AutoAttackClosestEnemy();
+                    lastAttackTime = Time.time;
+                }
+            }
+        }
     }
 
     public void PlayAttackAnimation()
@@ -67,13 +137,13 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void IncreaseSpeed(int amount)
-    {
-        moveSpeed += amount;
-    }
-
     public bool IsMoving()
     {
         return movementInput.magnitude > inputThreshold;
+    }
+
+    public void IncreaseSpeed(float amount)
+    {
+        moveSpeed += amount;
     }
 }

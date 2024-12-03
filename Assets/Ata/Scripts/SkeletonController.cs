@@ -10,7 +10,7 @@ public class SkeletonController : MonoBehaviour
     private Transform targetEnemy;
     public float moveSpeed = 3f;
     public Animator animator;
-    public float stoppingDistance = 2f; // Distance to stop before colliding with enemy
+    public float stoppingDistance = 2f; 
 
     public void Initialize(Player player, float attackRange, int damage)
     {

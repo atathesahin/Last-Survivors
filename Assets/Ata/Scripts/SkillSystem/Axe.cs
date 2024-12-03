@@ -2,7 +2,7 @@
 
 public class Axe : MonoBehaviour
 {
-    private int damage; // Baltanın vereceği hasar (int)
+    private int damage; 
 
     public void Initialize(int damage)
     {

@@ -7,7 +7,7 @@ public class SpeedBoostSkill : Skill
 
     public override void ActivateSkill(Player player)
     {
-        // Hız artışı aktif edildiğinde oyuncunun hızını artır
+       
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
         if (playerMovement != null)
         {

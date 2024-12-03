@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
     public float damageCooldown = 1.5f;
     private float lastDamageTime;
 
-    public float stoppingDistance = 1.5f; // Oyuncuya olan minimum mesafe
+    public float stoppingDistance = 1.5f; 
     [SerializeField] private ObjectPool damagePopupPool;
 
     void Start()
@@ -80,7 +80,7 @@ public class Enemy : MonoBehaviour
     {
         if (damagePopupPool == null)
         {
-            Debug.LogError("DamagePopupPool referansı atanmadı!");
+    
             return;
         }
 
