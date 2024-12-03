@@ -136,4 +136,5 @@ MonoBehaviour:
   shootPoint: {fileID: 6254017294445975289}
   projectileSpeed: 20
   attackDamage: 20
-  attackCooldown: 1.5
+  attackCooldown: 3
+  attackRange: 10

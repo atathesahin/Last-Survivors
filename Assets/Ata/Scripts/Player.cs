@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -100,7 +101,8 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Player öldü!");
+        Destroy(gameObject);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void GainRandomSkill()
@@ -132,6 +134,7 @@ public class Player : MonoBehaviour
 
                 UIManager.Instance.UpdateSkillIcon(existingSkill);
                 ApplyGlowEffect();
+                UIManager.Instance.ShowSkillNotification($"{existingSkill.skillName} upgraded to level {existingSkill.currentLevel}");
             }
         }
         else
@@ -142,6 +145,7 @@ public class Player : MonoBehaviour
 
             UIManager.Instance.AddSkillIcon(randomSkill);
             ApplyGlowEffect();
+            UIManager.Instance.ShowSkillNotification($"New Skill Acquired: {randomSkill.skillName}");
         }
     }
 
